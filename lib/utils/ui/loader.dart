@@ -14,6 +14,7 @@ class AppLoader extends StatefulWidget {
 class _AppLoaderState extends State<AppLoader>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+
   @override
   void initState() {
     super.initState();
@@ -31,24 +32,30 @@ class _AppLoaderState extends State<AppLoader>
 
   @override
   Widget build(BuildContext context) {
+    final loaderSize = widget.size ?? 50.sp;
     return Center(
       child: SizedBox(
-        width: widget.size ?? 50.sp,
-        height: widget.size ?? 50.sp,
+        width: loaderSize,
+        height: loaderSize,
         child: AnimatedBuilder(
           animation: _controller,
           builder: (context, child) {
             return Row(
+              mainAxisSize: MainAxisSize.min, // ✅ shrink row to content
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(3, (index) {
                 final delay = index * 0.2;
                 final value = Curves.easeInOut.transform(
                   ((_controller.value + delay) % 1.0),
                 );
+                final dotSize =
+                    (loaderSize * 0.25) * value; // ✅ relative to loaderSize
                 return Container(
-                  margin: EdgeInsets.symmetric(horizontal: 1.w),
-                  height: 10.sp * value,
-                  width: 10.sp * value,
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 2,
+                  ), // ✅ fixed margin
+                  height: dotSize,
+                  width: dotSize,
                   decoration: BoxDecoration(
                     color: (widget.color ?? AppColors.primaryColor).withValues(
                       alpha: 0.2 + value * 0.8,

@@ -111,4 +111,62 @@ class AuthController extends GetxController {
     );
     isLoading.value = false;
   }
+
+  Future<void> forgetPassword({
+    required BuildContext context,
+    required String email,
+  }) async {
+    isLoading.value = true;
+    final result = await _authApiService.forgetPassword(email: email);
+    if (!context.mounted) {
+      isLoading.value = false;
+      return;
+    }
+    result.fold(
+      (failure) {
+        CustomSnackbar.show(context, message: failure, isError: true);
+      },
+      (success) {
+        CustomSnackbar.show(
+          context,
+          message: 'OTP sent to your email successfully',
+          isError: false,
+        );
+        context.push(AppRoutes.resetPasswordRoute, extra: email);
+      },
+    );
+    isLoading.value = false;
+  }
+
+  Future<void> resetPassword({
+    required BuildContext context,
+    required String email,
+    required String otp,
+    required String newPassword,
+  }) async {
+    isLoading.value = true;
+    final result = await _authApiService.resetPassword(
+      email: email,
+      otp: otp,
+      newPassword: newPassword,
+    );
+    if (!context.mounted) {
+      isLoading.value = false;
+      return;
+    }
+    result.fold(
+      (failure) {
+        CustomSnackbar.show(context, message: failure, isError: true);
+      },
+      (success) {
+        CustomSnackbar.show(
+          context,
+          message: 'Password reset successfully',
+          isError: false,
+        );
+        context.go(AppRoutes.loginRoute);
+      },
+    );
+    isLoading.value = false;
+  }
 }

@@ -15,7 +15,7 @@ import 'package:sizer/sizer.dart';
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
 
-  final authController = Get.find<AuthController>();
+  final AuthController _authController = Get.find<AuthController>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
@@ -56,7 +56,9 @@ class LoginScreen extends StatelessWidget {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    context.push(AppRoutes.forgetPasswordRoute);
+                  },
                   child: Text(
                     'Forgot password?',
                     style: AppTheme.bodyStyle.copyWith(
@@ -69,8 +71,9 @@ class LoginScreen extends StatelessWidget {
               SizedBox(height: 3.h),
               CustomButton(
                 text: "Sign In",
+                isLoading: _authController.isLoading.value,
                 onPressed: () {
-                  authController.loginUser(
+                  _authController.loginUser(
                     context: context,
                     email: emailController.text,
                     password: passwordController.text,

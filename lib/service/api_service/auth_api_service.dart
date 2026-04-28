@@ -15,6 +15,13 @@ abstract class AuthApiService {
     required String password,
   });
   Future<Either<String, Response>> logoutUser();
+
+  Future<Either<String, Response>> forgetPassword({required String email});
+  Future<Either<String, Response>> resetPassword({
+    required String email,
+    required String otp,
+    required String newPassword,
+  });
 }
 
 class AuthApiServiceImpl implements AuthApiService {
@@ -92,6 +99,42 @@ class AuthApiServiceImpl implements AuthApiService {
       return right(response);
     } on DioException catch (e) {
       return left(e.response?.data['message'] ?? 'Logout Failed!');
+    } catch (e) {
+      return left(e.toString());
+    }
+  }
+
+  @override
+  Future<Either<String, Response>> forgetPassword({
+    required String email,
+  }) async {
+    try {
+      final response = await _dioClient.post(
+        '/auth/forget-password',
+        data: {'email': email},
+      );
+      return right(response);
+    } on DioException catch (e) {
+      return left(e.response?.data['message'] ?? 'Failed to forget password');
+    } catch (e) {
+      return left(e.toString());
+    }
+  }
+
+  @override
+  Future<Either<String, Response>> resetPassword({
+    required String email,
+    required String otp,
+    required String newPassword,
+  }) async {
+    try {
+      final response = await _dioClient.post(
+        '/auth/reset-password',
+        data: {'email': email, 'otp': otp, 'newPassword': newPassword},
+      );
+      return right(response);
+    } on DioException catch (e) {
+      return left(e.response?.data['message'] ?? 'Failed to reset password');
     } catch (e) {
       return left(e.toString());
     }

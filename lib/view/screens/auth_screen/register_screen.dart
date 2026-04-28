@@ -15,7 +15,7 @@ import 'package:sizer/sizer.dart';
 class RegisterScreen extends StatelessWidget {
   RegisterScreen({super.key});
 
-  final authController = Get.find<AuthController>();
+  final AuthController _authController = Get.find<AuthController>();
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -65,8 +65,9 @@ class RegisterScreen extends StatelessWidget {
               SizedBox(height: 4.h),
               CustomButton(
                 text: "Create Account",
+                isLoading: _authController.isLoading.value,
                 onPressed: () {
-                  authController.registerUser(
+                  _authController.registerUser(
                     context: context,
                     name: nameController.text,
                     email: emailController.text,
