@@ -40,16 +40,13 @@ class ProfileController extends GetxController {
     isLoading.value = true;
     try {
       final result = await _profileApiService.getAllUsers();
-      return result.fold(
-        (failure) => failure,
-        (success) {
-          final List data = success.data as List;
-          allUsers.value = data
-              .map((json) => UserModel.fromJson(json as Map<String, dynamic>))
-              .toList();
-          return null; // null means no error
-        },
-      );
+      return result.fold((failure) => failure, (success) {
+        final List data = success.data as List;
+        allUsers.value = data
+            .map((json) => UserModel.fromJson(json as Map<String, dynamic>))
+            .toList();
+        return null; // null means no error
+      });
     } finally {
       isLoading.value = false;
     }
@@ -60,6 +57,10 @@ class ProfileController extends GetxController {
     required String oldPassword,
     required String newPassword,
   }) async {
+    if ((oldPassword.isNotEmpty && newPassword.isEmpty) ||
+        (oldPassword.isEmpty && newPassword.isNotEmpty)) {
+      return 'Please fill both password fields to change your password';
+    }
     isLoading.value = true;
     try {
       final result = await _profileApiService.updateProfile(
@@ -67,13 +68,10 @@ class ProfileController extends GetxController {
         oldPassword: oldPassword,
         newPassword: newPassword,
       );
-      return result.fold(
-        (failure) => failure,
-        (success) async {
-          await getMyProfile();
-          return null; // null means no error
-        },
-      );
+      return result.fold((failure) => failure, (success) async {
+        await getMyProfile();
+        return null;
+      });
     } finally {
       isLoading.value = false;
     }

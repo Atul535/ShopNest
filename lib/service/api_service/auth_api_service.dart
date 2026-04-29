@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:product_app/service/network_service/dio_client.dart';
+import 'package:product_app/utils/routing/api_constants.dart';
 
 abstract class AuthApiService {
   Future<Either<String, Response>> registerUser({
@@ -37,7 +38,7 @@ class AuthApiServiceImpl implements AuthApiService {
   }) async {
     try {
       final response = await _dioClient.post(
-        '/auth/register',
+        ApiConstants.registerEndPoint,
         data: {'name': name, 'email': email, 'password': password},
       );
       return right(response);
@@ -68,7 +69,7 @@ class AuthApiServiceImpl implements AuthApiService {
   }) async {
     try {
       final response = await _dioClient.post(
-        '/auth/login',
+        ApiConstants.loginEndPoint,
         data: {'email': email, 'password': password},
       );
       return right(response);
@@ -95,7 +96,7 @@ class AuthApiServiceImpl implements AuthApiService {
   @override
   Future<Either<String, Response>> logoutUser() async {
     try {
-      final response = await _dioClient.post('/auth/logout');
+      final response = await _dioClient.post(ApiConstants.logoutEndPoint);
       return right(response);
     } on DioException catch (e) {
       return left(e.response?.data['message'] ?? 'Logout Failed!');
@@ -110,7 +111,7 @@ class AuthApiServiceImpl implements AuthApiService {
   }) async {
     try {
       final response = await _dioClient.post(
-        '/auth/forget-password',
+        ApiConstants.forgetPasswordEndPoint,
         data: {'email': email},
       );
       return right(response);
@@ -129,7 +130,7 @@ class AuthApiServiceImpl implements AuthApiService {
   }) async {
     try {
       final response = await _dioClient.post(
-        '/auth/reset-password',
+        ApiConstants.resetPasswordEndPoint,
         data: {'email': email, 'otp': otp, 'newPassword': newPassword},
       );
       return right(response);

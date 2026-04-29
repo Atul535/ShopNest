@@ -6,7 +6,7 @@ import 'package:product_app/view/screens/auth_screen/register_screen.dart';
 import 'package:product_app/view/screens/auth_screen/reset_password_screen.dart';
 import 'package:product_app/view/screens/home_screen/cart_screen.dart';
 import 'package:product_app/view/screens/home_screen/home_screen.dart';
-import 'package:product_app/view/screens/home_screen/profile_screen.dart';
+import 'package:product_app/view/screens/profile/profile_screen.dart';
 import 'package:product_app/view/widgets/main_wrapper.dart';
 
 class AppRouter {

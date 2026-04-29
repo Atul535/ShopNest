@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:product_app/service/network_service/dio_client.dart';
+import 'package:product_app/utils/routing/api_constants.dart';
 
 abstract class ProfileApiService {
   Future<Either<String, Response>> getUser();
@@ -19,7 +20,7 @@ class ProfileApiServiceImpl implements ProfileApiService {
   @override
   Future<Either<String, Response>> getAllUsers() async {
     try {
-      final response = await _dioClient.get('/users/getAllUsers');
+      final response = await _dioClient.get(ApiConstants.getAllUsersEndPoint);
       return Right(response);
     } on DioException catch (e) {
       return left(e.response?.data['message'] ?? "No registered user found");
@@ -31,7 +32,7 @@ class ProfileApiServiceImpl implements ProfileApiService {
   @override
   Future<Either<String, Response>> getUser() async {
     try {
-      final response = await _dioClient.get('/users/getUser');
+      final response = await _dioClient.get(ApiConstants.getUserEndPoint);
       return right(response);
     } on DioException catch (e) {
       return left(e.response?.data['message'] ?? "No user found!");
@@ -58,7 +59,10 @@ class ProfileApiServiceImpl implements ProfileApiService {
         data['newPassword'] = newPassword;
       }
 
-      final response = await _dioClient.put('/users/updateProfile', data: data);
+      final response = await _dioClient.put(
+        ApiConstants.updateProfileEndPoint,
+        data: data,
+      );
       return right(response);
     } on DioException catch (e) {
       return left(e.response?.data['message'] ?? 'Failed to update profile!');
