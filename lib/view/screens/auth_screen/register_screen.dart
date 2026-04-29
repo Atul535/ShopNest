@@ -10,6 +10,7 @@ import 'package:product_app/utils/ui/custom_appbar.dart';
 import 'package:product_app/utils/ui/custom_button.dart';
 import 'package:product_app/utils/ui/custom_form_field.dart';
 import 'package:product_app/utils/ui/custom_scaffold.dart';
+import 'package:product_app/utils/ui/custom_snackbar.dart';
 import 'package:sizer/sizer.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -66,13 +67,20 @@ class RegisterScreen extends StatelessWidget {
               CustomButton(
                 text: "Create Account",
                 isLoading: _authController.isLoading.value,
-                onPressed: () {
-                  _authController.registerUser(
-                    context: context,
+                onPressed: () async {
+                  final error = await _authController.registerUser(
                     name: nameController.text,
                     email: emailController.text,
                     password: passwordController.text,
                   );
+                  if (context.mounted) {
+                    if (error != null) {
+                      CustomSnackbar.show(context, message: error, isError: true);
+                    } else {
+                      CustomSnackbar.show(context, message: "Registration Success", isError: false);
+                      context.go(AppRoutes.loginRoute);
+                    }
+                  }
                 },
               ),
 

@@ -5,10 +5,13 @@ import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:product_app/controller/auth_controller.dart';
 import 'package:product_app/utils/theme/app_colors.dart';
 import 'package:product_app/utils/theme/app_theme.dart';
+import 'package:go_router/go_router.dart';
+import 'package:product_app/utils/routing/app_routes.dart';
 import 'package:product_app/utils/ui/custom_appbar.dart';
 import 'package:product_app/utils/ui/custom_button.dart';
 import 'package:product_app/utils/ui/custom_form_field.dart';
 import 'package:product_app/utils/ui/custom_scaffold.dart';
+import 'package:product_app/utils/ui/custom_snackbar.dart';
 import 'package:product_app/view/widgets/otp_input_field.dart';
 import 'package:sizer/sizer.dart';
 
@@ -110,22 +113,37 @@ class ResetPasswordScreen extends StatelessWidget {
                 () => CustomButton(
                   text: 'Reset Password',
                   isLoading: _authController.isLoading.value,
-                  onPressed: () {
+                  onPressed: () async {
                     if (_otp.length != 6) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please enter the complete OTP'),
-                        ),
+                      CustomSnackbar.show(
+                        context,
+                        message: 'Please enter the complete OTP',
+                        isInfo: true,
                       );
                       return;
                     }
                     if (_formKey.currentState!.validate()) {
-                      _authController.resetPassword(
-                        context: context,
+                      final error = await _authController.resetPassword(
                         email: email,
                         otp: _otp,
                         newPassword: _newPasswordController.text.trim(),
                       );
+                      if (context.mounted) {
+                        if (error != null) {
+                          CustomSnackbar.show(
+                            context,
+                            message: error,
+                            isError: true,
+                          );
+                        } else {
+                          CustomSnackbar.show(
+                            context,
+                            message: 'Password reset successfully',
+                            isError: false,
+                          );
+                          context.go(AppRoutes.loginRoute);
+                        }
+                      }
                     }
                   },
                 ),

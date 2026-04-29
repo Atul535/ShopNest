@@ -10,6 +10,7 @@ import 'package:product_app/utils/ui/custom_appbar.dart';
 import 'package:product_app/utils/ui/custom_button.dart';
 import 'package:product_app/utils/ui/custom_form_field.dart';
 import 'package:product_app/utils/ui/custom_scaffold.dart';
+import 'package:product_app/utils/ui/custom_snackbar.dart';
 import 'package:sizer/sizer.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -72,12 +73,19 @@ class LoginScreen extends StatelessWidget {
               CustomButton(
                 text: "Sign In",
                 isLoading: _authController.isLoading.value,
-                onPressed: () {
-                  _authController.loginUser(
-                    context: context,
+                onPressed: () async {
+                  final error = await _authController.loginUser(
                     email: emailController.text,
                     password: passwordController.text,
                   );
+                  if (context.mounted) {
+                    if (error != null) {
+                      CustomSnackbar.show(context, message: error, isError: true);
+                    } else {
+                      CustomSnackbar.show(context, message: 'Login Successfully!!', isError: false);
+                      context.go(AppRoutes.homeScreenRoute);
+                    }
+                  }
                 },
               ),
               SizedBox(height: 2.h),

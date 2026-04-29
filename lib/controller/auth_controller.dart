@@ -1,13 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_instance/src/extension_instance.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
-import 'package:go_router/go_router.dart';
+import 'package:get/get.dart';
 import 'package:product_app/service/api_service/auth_api_service.dart';
 import 'package:product_app/service/network_service/local_storage_service.dart';
-import 'package:product_app/utils/routing/app_routes.dart';
-import 'package:product_app/utils/ui/custom_snackbar.dart';
 
 class AuthController extends GetxController {
   final AuthApiService _authApiService;
@@ -15,158 +8,100 @@ class AuthController extends GetxController {
 
   AuthController(this._authApiService);
 
-  var isLoading = false.obs;
+  RxBool isLoading = false.obs;
 
-  Future<void> registerUser({
-    required BuildContext context,
+  Future<String?> registerUser({
     required String name,
     required String email,
     required String password,
   }) async {
     isLoading.value = true;
-    final result = await _authApiService.registerUser(
-      name: name,
-      email: email,
-      password: password,
-    );
-
-    if (!context.mounted) {
+    try {
+      final result = await _authApiService.registerUser(
+        name: name,
+        email: email,
+        password: password,
+      );
+      return result.fold(
+        (failure) => failure,
+        (success) => null, // null means no error
+      );
+    } finally {
       isLoading.value = false;
-      return;
     }
-
-    result.fold(
-      (failure) {
-        CustomSnackbar.show(context, message: failure, isError: true);
-      },
-      (success) {
-        CustomSnackbar.show(
-          context,
-          message: "Registration Success",
-          isError: false,
-        );
-        context.go(AppRoutes.loginRoute);
-      },
-    );
-    isLoading.value = false;
   }
 
-  Future<void> loginUser({
-    required BuildContext context,
+  Future<String?> loginUser({
     required String email,
     required String password,
   }) async {
     isLoading.value = true;
-    final result = await _authApiService.loginUser(
-      email: email,
-      password: password,
-    );
-
-    if (!context.mounted) {
+    try {
+      final result = await _authApiService.loginUser(
+        email: email,
+        password: password,
+      );
+      return result.fold(
+        (failure) => failure,
+        (success) {
+          _storageService.saveToken(success.data['token']);
+          return null; // null means no error
+        },
+      );
+    } finally {
       isLoading.value = false;
-      return;
     }
-
-    result.fold(
-      (failure) {
-        CustomSnackbar.show(context, message: failure, isError: true);
-      },
-      (success) {
-        String token = success.data['token'];
-        _storageService.saveToken(token);
-        debugPrint('Token saved successfully: $token');
-        if (!context.mounted) return;
-        CustomSnackbar.show(
-          context,
-          message: 'Login Successfully!!',
-          isError: false,
-        );
-        context.go(AppRoutes.homeScreenRoute);
-      },
-    );
-    isLoading.value = false;
   }
 
-  Future<void> logoutUser({required BuildContext context}) async {
+  Future<String?> logoutUser() async {
     isLoading.value = true;
-    final result = await _authApiService.logoutUser();
-    if (!context.mounted) {
+    try {
+      final result = await _authApiService.logoutUser();
+      return result.fold(
+        (failure) => failure,
+        (success) async {
+          await _storageService.clearToken();
+          return null;
+        },
+      );
+    } finally {
       isLoading.value = false;
-      return;
     }
-    result.fold(
-      (failure) {
-        CustomSnackbar.show(context, message: failure, isError: true);
-      },
-      (success) async {
-        await _storageService.clearToken();
-        if (!context.mounted) return;
-        CustomSnackbar.show(
-          context,
-          message: 'Logout Successfully!!',
-          isError: false,
-        );
-        context.go(AppRoutes.loginRoute);
-      },
-    );
-    isLoading.value = false;
   }
 
-  Future<void> forgetPassword({
-    required BuildContext context,
+  Future<String?> forgetPassword({
     required String email,
   }) async {
     isLoading.value = true;
-    final result = await _authApiService.forgetPassword(email: email);
-    if (!context.mounted) {
+    try {
+      final result = await _authApiService.forgetPassword(email: email);
+      return result.fold(
+        (failure) => failure,
+        (success) => null,
+      );
+    } finally {
       isLoading.value = false;
-      return;
     }
-    result.fold(
-      (failure) {
-        CustomSnackbar.show(context, message: failure, isError: true);
-      },
-      (success) {
-        CustomSnackbar.show(
-          context,
-          message: 'OTP sent to your email successfully',
-          isError: false,
-        );
-        context.push(AppRoutes.resetPasswordRoute, extra: email);
-      },
-    );
-    isLoading.value = false;
   }
 
-  Future<void> resetPassword({
-    required BuildContext context,
+  Future<String?> resetPassword({
     required String email,
     required String otp,
     required String newPassword,
   }) async {
     isLoading.value = true;
-    final result = await _authApiService.resetPassword(
-      email: email,
-      otp: otp,
-      newPassword: newPassword,
-    );
-    if (!context.mounted) {
+    try {
+      final result = await _authApiService.resetPassword(
+        email: email,
+        otp: otp,
+        newPassword: newPassword,
+      );
+      return result.fold(
+        (failure) => failure,
+        (success) => null,
+      );
+    } finally {
       isLoading.value = false;
-      return;
     }
-    result.fold(
-      (failure) {
-        CustomSnackbar.show(context, message: failure, isError: true);
-      },
-      (success) {
-        CustomSnackbar.show(
-          context,
-          message: 'Password reset successfully',
-          isError: false,
-        );
-        context.go(AppRoutes.loginRoute);
-      },
-    );
-    isLoading.value = false;
   }
 }

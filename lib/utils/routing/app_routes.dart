@@ -4,4 +4,6 @@ class AppRoutes {
   static const String homeScreenRoute = "/homeScreen";
   static const String forgetPasswordRoute = "/forgetPassword";
   static const String resetPasswordRoute = "/resetPassword";
+  static const String cartRoute='/cart';
+  static const String profileRoute='/profile';
 }

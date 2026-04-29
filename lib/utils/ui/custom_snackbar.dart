@@ -8,11 +8,26 @@ class CustomSnackbar {
     BuildContext context, {
     required String message,
     bool isError = false,
+    bool isInfo = false,
   }) {
+    IconData iconData;
+    Color bgColor;
+
+    if (isError) {
+      iconData = Icons.error_outline;
+      bgColor = AppColors.errorColor;
+    } else if (isInfo) {
+      iconData = Icons.info_outline;
+      bgColor = AppColors.saleColor;
+    } else {
+      iconData = Icons.check_circle_outline;
+      bgColor = AppColors.green;
+    }
+
     final snackbar = SnackBar(
       content: Row(
         children: [
-          Icon(isError ? Icons.error_outline : Icons.check_circle_outline),
+          Icon(iconData, color: AppColors.whiteColor),
           SizedBox(width: 2.w),
           Expanded(
             child: Text(
@@ -25,7 +40,7 @@ class CustomSnackbar {
           ),
         ],
       ),
-      backgroundColor: isError ? AppColors.errorColor : AppColors.green,
+      backgroundColor: bgColor,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       margin: EdgeInsets.all(16.sp),

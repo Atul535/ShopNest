@@ -5,10 +5,13 @@ import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:product_app/controller/auth_controller.dart';
 import 'package:product_app/utils/theme/app_colors.dart';
 import 'package:product_app/utils/theme/app_theme.dart';
+import 'package:go_router/go_router.dart';
+import 'package:product_app/utils/routing/app_routes.dart';
 import 'package:product_app/utils/ui/custom_appbar.dart';
 import 'package:product_app/utils/ui/custom_button.dart';
 import 'package:product_app/utils/ui/custom_form_field.dart';
 import 'package:product_app/utils/ui/custom_scaffold.dart';
+import 'package:product_app/utils/ui/custom_snackbar.dart';
 import 'package:sizer/sizer.dart';
 
 class ForgetPasswordScreen extends StatelessWidget {
@@ -48,12 +51,19 @@ class ForgetPasswordScreen extends StatelessWidget {
                 () => CustomButton(
                   text: 'Send Otp',
                   isLoading: _authController.isLoading.value,
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      _authController.forgetPassword(
-                        context: context,
+                      final error = await _authController.forgetPassword(
                         email: _emailController.text.trim(),
                       );
+                      if (context.mounted) {
+                        if (error != null) {
+                          CustomSnackbar.show(context, message: error, isError: true);
+                        } else {
+                          CustomSnackbar.show(context, message: 'OTP sent to your email successfully', isError: false);
+                          context.push(AppRoutes.resetPasswordRoute, extra: _emailController.text.trim());
+                        }
+                      }
                     }
                   },
                 ),

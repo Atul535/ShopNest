@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
+import 'package:get/state_manager.dart';
 import 'package:product_app/controller/auth_controller.dart';
+import 'package:product_app/controller/profile_controller.dart';
 import 'package:product_app/utils/theme/app_colors.dart';
 import 'package:product_app/utils/theme/app_theme.dart';
+import 'package:go_router/go_router.dart';
+import 'package:product_app/utils/routing/app_routes.dart';
 import 'package:product_app/utils/ui/custom_appbar.dart';
 import 'package:product_app/utils/ui/custom_scaffold.dart';
+import 'package:product_app/utils/ui/custom_snackbar.dart';
 import 'package:sizer/sizer.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
-  final authController = Get.find<AuthController>();
+  final ProfileController _profileController = Get.find<ProfileController>();
+  final AuthController _authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +26,22 @@ class HomeScreen extends StatelessWidget {
         showBackButton: false,
         actions: [
           IconButton(
-            onPressed: () {
-              authController.logoutUser(context: context);
+            onPressed: () async {
+              final error = await _authController.logoutUser();
+              if (context.mounted) {
+                if (error != null) {
+                  CustomSnackbar.show(context, message: error, isError: true);
+                } else {
+                  CustomSnackbar.show(
+                    context,
+                    message: 'Logout Successfully!!',
+                    isError: false,
+                  );
+                  context.go(AppRoutes.loginRoute);
+                }
+              }
             },
-            icon: Icon(Icons.logout),
+            icon: const Icon(Icons.logout),
           ),
         ],
       ),
@@ -31,6 +49,31 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Obx(() {
+              final fullName = _profileController.user.value?.name ?? "";
+              final firstName = fullName.trim().split(" ").first;
+              return Row(
+                children: [
+                  Text(
+                    'Welcome',
+                    style: AppTheme.bodyStyle.copyWith(
+                      color: AppColors.textSecondary,
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(width: 1.w),
+                  Text(
+                    '$firstName,',
+                    style: AppTheme.subHeadingStyle.copyWith(
+                      color: AppColors.primaryColor,
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              );
+            }),
             SizedBox(height: 2.h),
 
             // Search bar

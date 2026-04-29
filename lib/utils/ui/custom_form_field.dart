@@ -7,6 +7,7 @@ import 'package:sizer/sizer.dart';
 class CustomFormField extends StatelessWidget {
   final String label;
   final String hintText;
+  final bool readOnly;
   final TextEditingController controller;
   final IconData? prefixIcon;
   final IconData? suffixIcon;
@@ -21,6 +22,7 @@ class CustomFormField extends StatelessWidget {
     required this.controller,
     this.prefixIcon,
     this.suffixIcon,
+    this.readOnly = false,
     this.isPassword = false,
     this.keyboardType = TextInputType.text,
     this.validator,
@@ -43,6 +45,7 @@ class CustomFormField extends StatelessWidget {
         CustomTextField(
           hintText: hintText,
           controller: controller,
+          isReadOnly: readOnly,
           prefixIcon: prefixIcon,
           isPassword: isPassword,
           suffixIcon: suffixIcon,

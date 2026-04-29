@@ -11,6 +11,7 @@ class CustomTextField extends StatelessWidget {
   final IconData? prefixIcon;
   final IconData? suffixIcon;
   final bool isPassword;
+  final bool isReadOnly;
   final TextInputType keyboardType;
   final String? Function(String?)? validator;
   final RxBool _obscureText = false.obs;
@@ -21,6 +22,7 @@ class CustomTextField extends StatelessWidget {
     required this.controller,
     this.prefixIcon,
     this.suffixIcon,
+    this.isReadOnly = false,
     this.isPassword = false,
     this.keyboardType = TextInputType.text,
     this.validator,
@@ -35,6 +37,7 @@ class CustomTextField extends StatelessWidget {
         obscureText: _obscureText.value,
         keyboardType: keyboardType,
         validator: validator,
+        readOnly: isReadOnly,
         style: AppTheme.bodyStyle.copyWith(color: AppColors.textPrimary),
         decoration: InputDecoration(
           hintText: hintText,
