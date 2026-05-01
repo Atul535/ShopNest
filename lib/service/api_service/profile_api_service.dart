@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:product_app/service/network_service/dio_client.dart';
-import 'package:product_app/utils/routing/api_constants.dart';
+import 'package:product_app/core/constants/api_constants.dart';
 
 abstract class ProfileApiService {
   Future<Either<String, Response>> getUser();

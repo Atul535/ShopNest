@@ -4,9 +4,9 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:product_app/service/network_service/local_storage_service.dart';
-import 'package:product_app/utils/dependency/dependency_injection.dart';
-import 'package:product_app/utils/routing/app_router.dart';
-import 'package:product_app/utils/theme/app_theme.dart';
+import 'package:product_app/core/utils/dependency/dependency_injection.dart';
+import 'package:product_app/service/routing/app_router.dart';
+import 'package:product_app/core/theme/app_theme.dart';
 import 'package:sizer/sizer.dart';
 
 void main() async {
