@@ -41,13 +41,11 @@ class AuthController extends GetxController {
         email: email,
         password: password,
       );
-      return result.fold(
-        (failure) => failure,
-        (success) {
-          _storageService.saveToken(success.data['token']);
-          return null; // null means no error
-        },
-      );
+      return result.fold((failure) => failure, (success) {
+        _storageService.saveToken(success.data['token']);
+        _storageService.saveRefreshToken(success.data['refreshToken']);
+        return null; // null means no error
+      });
     } finally {
       isLoading.value = false;
     }
@@ -57,28 +55,21 @@ class AuthController extends GetxController {
     isLoading.value = true;
     try {
       final result = await _authApiService.logoutUser();
-      return result.fold(
-        (failure) => failure,
-        (success) async {
-          await _storageService.clearToken();
-          return null;
-        },
-      );
+      return result.fold((failure) => failure, (success) async {
+        await _storageService.clearToken();
+        await _storageService.clearRefreshToken();
+        return null;
+      });
     } finally {
       isLoading.value = false;
     }
   }
 
-  Future<String?> forgetPassword({
-    required String email,
-  }) async {
+  Future<String?> forgetPassword({required String email}) async {
     isLoading.value = true;
     try {
       final result = await _authApiService.forgetPassword(email: email);
-      return result.fold(
-        (failure) => failure,
-        (success) => null,
-      );
+      return result.fold((failure) => failure, (success) => null);
     } finally {
       isLoading.value = false;
     }
@@ -96,10 +87,7 @@ class AuthController extends GetxController {
         otp: otp,
         newPassword: newPassword,
       );
-      return result.fold(
-        (failure) => failure,
-        (success) => null,
-      );
+      return result.fold((failure) => failure, (success) => null);
     } finally {
       isLoading.value = false;
     }

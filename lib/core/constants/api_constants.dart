@@ -11,4 +11,5 @@ class ApiConstants {
   static const String createCategoryEndPoint = "/category/createCategory";
   static const String updateCategoryEndPoint = "/category/updateCategory";
   static const String deleteCategoryEndPoint = "/category/deleteCategory";
+  static const String refreshTokenEndPoint = "/auth/refresh-token";
 }

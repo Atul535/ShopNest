@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:product_app/core/constants/api_constants.dart';
 import 'package:product_app/service/network_service/local_storage_service.dart';
 
 class DioClient {
@@ -31,12 +32,53 @@ class DioClient {
           }
           return handler.next(options);
         },
-        onError: (DioException e, handler) {
+        onError: (DioException e, handler) async {
           debugPrint('API ERROR: ${e.message}');
+          if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
+            bool refreshed = await _refreshToken();
+            if (refreshed) {
+              final opts = e.requestOptions;
+              final newToken = await _storageService.getToken();
+              opts.headers['Authorization'] = 'Bearer $newToken';
+              try {
+                //fetch request again
+                final response = await _dio.fetch(opts);
+                return handler.resolve(response);
+              } catch (retryError) {
+                return handler.next(e);
+              }
+            } else {
+              await _storageService.clearToken();
+              await _storageService.clearRefreshToken();
+              //push to login screen
+            }
+          }
           return handler.next(e);
         },
       ),
     );
+  }
+
+  //refresh function
+
+  Future<bool> _refreshToken()async{
+    try{
+      String? refreshToken=await _storageService.getRefreshToken();
+      if(refreshToken==null)return false;
+
+      Dio tempDio = Dio(BaseOptions(baseUrl: dotenv.get('BASE_URL')));
+      final response = await tempDio.post(ApiConstants.refreshTokenEndPoint,data: {'refreshToken':refreshToken});
+
+      if(response.statusCode==200){
+        String newAccessToken = response.data['token'];
+        await _storageService.saveToken(newAccessToken);
+        return true;
+      }
+      return false;
+    }catch(e){
+      debugPrint('Failed to refresh Token: $e');
+      return false;
+    }
   }
 
   // --- API Methods ---
