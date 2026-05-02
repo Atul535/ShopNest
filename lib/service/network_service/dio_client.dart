@@ -61,21 +61,26 @@ class DioClient {
 
   //refresh function
 
-  Future<bool> _refreshToken()async{
-    try{
-      String? refreshToken=await _storageService.getRefreshToken();
-      if(refreshToken==null)return false;
+  Future<bool> _refreshToken() async {
+    try {
+      String? refreshToken = await _storageService.getRefreshToken();
+      if (refreshToken == null) return false;
 
       Dio tempDio = Dio(BaseOptions(baseUrl: dotenv.get('BASE_URL')));
-      final response = await tempDio.post(ApiConstants.refreshTokenEndPoint,data: {'refreshToken':refreshToken});
+      final response = await tempDio.post(
+        ApiConstants.refreshTokenEndPoint,
+        data: {'refreshToken': refreshToken},
+      );
 
-      if(response.statusCode==200){
+      if (response.statusCode == 200) {
         String newAccessToken = response.data['token'];
+        String newRefreshToken = response.data['refreshToken'];
         await _storageService.saveToken(newAccessToken);
+        await _storageService.saveRefreshToken(newRefreshToken);
         return true;
       }
       return false;
-    }catch(e){
+    } catch (e) {
       debugPrint('Failed to refresh Token: $e');
       return false;
     }
