@@ -17,6 +17,7 @@ abstract class CategoryApiService {
     String? image,
   });
   Future<Either<String, Response>> deleteCategory(int id);
+  Future<Either<String, Response>> searchProducts(String query);
 }
 
 class CategoryApiServiceImpl implements CategoryApiService {
@@ -96,6 +97,21 @@ class CategoryApiServiceImpl implements CategoryApiService {
       return right(response);
     } on DioException catch (e) {
       return left(e.response?.data['message'] ?? "Failed to delete category");
+    } catch (e) {
+      return left(e.toString());
+    }
+  }
+
+  @override
+  Future<Either<String, Response<dynamic>>> searchProducts(String query) async {
+    try {
+      final response = await _dioClient.get(
+        ApiConstants.searchProductsEndPoint,
+        queryParameters: {'query': query},
+      );
+      return right(response);
+    } on DioException catch (e) {
+      return left(e.response?.data['message'] ?? "Failed to search products.");
     } catch (e) {
       return left(e.toString());
     }

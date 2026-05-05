@@ -1,11 +1,13 @@
 import 'package:go_router/go_router.dart';
 import 'package:product_app/service/routing/app_routes.dart';
+import 'package:product_app/src/model/category_model.dart';
 import 'package:product_app/src/views/screens/auth_screen/forget_password_screen.dart';
 import 'package:product_app/src/views/screens/auth_screen/login_screen.dart';
 import 'package:product_app/src/views/screens/auth_screen/register_screen.dart';
 import 'package:product_app/src/views/screens/auth_screen/reset_password_screen.dart';
+import 'package:product_app/src/views/screens/category/category_products_screen.dart';
 import 'package:product_app/src/views/screens/home_screen/cart_screen.dart';
-import 'package:product_app/src/views/screens/home_screen/category_screen.dart';
+import 'package:product_app/src/views/screens/category/category_screen.dart';
 import 'package:product_app/src/views/screens/home_screen/home_screen.dart';
 import 'package:product_app/src/views/screens/profile/profile_screen.dart';
 import 'package:product_app/src/views/widgets/main_wrapper.dart';
@@ -35,6 +37,11 @@ class AppRouter {
           path: AppRoutes.resetPasswordRoute,
           builder: (context, state) =>
               ResetPasswordScreen(email: state.extra as String),
+        ),
+        GoRoute(
+          path: AppRoutes.categoryProductsRoute,
+          builder: (context, state) =>
+              CategoryProductsScreen(category: state.extra as CategoryModel),
         ),
 
         // Bottom Navigation Bar Routes

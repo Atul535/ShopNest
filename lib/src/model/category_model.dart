@@ -1,3 +1,5 @@
+import 'package:product_app/src/model/product_model.dart';
+
 class CategoryModel {
   final int? id;
   final String? name;
@@ -5,6 +7,7 @@ class CategoryModel {
   final String? imageUrl;
   final String? createdAt;
   final String? updatedAt;
+  final List<ProductModel>? products;
 
   CategoryModel({
     this.id,
@@ -13,6 +16,7 @@ class CategoryModel {
     this.imageUrl,
     this.createdAt,
     this.updatedAt,
+    this.products,
   });
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
@@ -23,6 +27,11 @@ class CategoryModel {
       imageUrl: json['imageUrl'],
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
+      products: json['products'] != null
+          ? (json['products'] as List)
+                .map((i) => ProductModel.fromJson(i as Map<String, dynamic>))
+                .toList()
+          : [],
     );
   }
 

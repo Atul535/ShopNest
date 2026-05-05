@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:product_app/core/utils/ui/loader.dart';
+import 'package:product_app/service/routing/app_routes.dart';
 import 'package:product_app/src/controller/category_controller.dart';
 import 'package:product_app/core/theme/app_colors.dart';
 import 'package:product_app/core/theme/app_theme.dart';
@@ -71,8 +73,11 @@ class CategoryScreen extends StatelessWidget {
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Image.network(
-                              '${dotenv.env['BASE_URL']?.replaceAll('/api', '')}${category.imageUrl}',
+                              category.imageUrl!.startsWith('http')
+                                  ? category.imageUrl!
+                                  : '${dotenv.env['BASE_URL']?.replaceAll('/api', '')}${category.imageUrl}',
                               fit: BoxFit.cover,
+
                               errorBuilder: (context, error, stackTrace) =>
                                   const Icon(
                                     Icons.image_not_supported,
@@ -111,7 +116,10 @@ class CategoryScreen extends StatelessWidget {
                     color: AppColors.textHint,
                   ),
                   onTap: () {
-                    // Later: Navigate to a screen showing products filtered by this category
+                    context.push(
+                      AppRoutes.categoryProductsRoute,
+                      extra: category,
+                    );
                   },
                 ),
               );
